@@ -1,9 +1,7 @@
 package com.example.cameraxjetpack.camera
 
 import android.Manifest
-import android.app.Activity
 import android.content.Context
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Matrix
 import android.util.Log
@@ -24,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cameraswitch
 import androidx.compose.material.icons.filled.Photo
 import androidx.compose.material.icons.filled.PhotoCamera
+import androidx.compose.material.icons.filled.Videocam
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -39,7 +38,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.myapplication.camera.CameraViewModel
 import kotlinx.coroutines.launch
@@ -52,15 +50,8 @@ fun CameraScreen(
     val bitmaps by viewModel.bitmaps.collectAsState()
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val CAMERAX_PERMISSION = arrayOf(
-        Manifest.permission.CAMERA,
-        Manifest.permission.RECORD_AUDIO
-    )
-    if (!hasRequiredPermissions(context)) {
-        ActivityCompat.requestPermissions(
-            context as Activity, CAMERAX_PERMISSION,0
-        )
-    }
+
+    viewModel.requestAllPermission(context)
     val controller = remember {
         LifecycleCameraController(context).apply {
             setEnabledUseCases(
@@ -136,7 +127,21 @@ fun CameraScreen(
                 ) {
                     Icon(
                         imageVector = Icons.Default.PhotoCamera,
-                        contentDescription = "Take photo",
+                        contentDescription = "Take Photo",
+                        tint = Color.White
+                    )
+                }
+                IconButton(
+                    onClick = {
+                        viewModel.recordVideo(
+                            controller = controller,
+                            context = context
+                        )
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Videocam,
+                        contentDescription = "Record Video",
                         tint = Color.White
                     )
                 }
@@ -177,17 +182,4 @@ private fun takePhoto(
             }
         }
     )
-}
-
-private fun hasRequiredPermissions(context: Context): Boolean {
-    val CAMERAX_PERMISSION = arrayOf(
-        Manifest.permission.CAMERA,
-        Manifest.permission.RECORD_AUDIO
-    )
-    return CAMERAX_PERMISSION.all {
-        ContextCompat.checkSelfPermission(
-            context,
-            it
-        ) == PackageManager.PERMISSION_GRANTED
-    }
 }

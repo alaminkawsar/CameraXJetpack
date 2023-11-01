@@ -1,4 +1,4 @@
-package com.example.myapplication.camera
+package com.example.cameraxjetpack.camera
 
 import android.Manifest
 import android.content.pm.PackageManager
