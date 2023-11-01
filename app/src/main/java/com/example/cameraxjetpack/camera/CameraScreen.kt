@@ -144,6 +144,7 @@ fun CameraScreen(
         }
     }
 }
+
 private fun takePhoto(
     controller: LifecycleCameraController,
     onPhotoTaken: (Bitmap) -> Unit,
