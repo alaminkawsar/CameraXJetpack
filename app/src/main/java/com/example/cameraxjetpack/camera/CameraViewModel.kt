@@ -1,6 +1,7 @@
 package com.example.myapplication.camera
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
@@ -49,6 +50,7 @@ class CameraViewModel(): ViewModel() {
     fun onTakePhoto(bitmap: Bitmap) {
         _bitmaps.value += bitmap
     }
+    @SuppressLint("MissingPermission")
     fun recordVideo(
         controller: LifecycleCameraController,
         context: Context
@@ -56,21 +58,10 @@ class CameraViewModel(): ViewModel() {
         if (recording != null) {
             recording?.stop()
             recording = null
-            return;
+            return
         }
         val outputFile = File(context.filesDir, "my-recording.mp4")
-        if (ActivityCompat.checkSelfPermission(
-                context,
-                Manifest.permission.RECORD_AUDIO
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
+        if(!hasRequiredPermissions(context)) {
             return
         }
         recording = controller.startRecording(
